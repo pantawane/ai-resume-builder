@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import Layout from './pages/Layout'
+import CoverLetter from "./pages/CoverLetter";
 import Dashboard from './pages/Dashboard'
 import ResumeBuilder from './pages/ResumeBuilder'
 import Preview from './pages/Preview'
@@ -19,8 +20,7 @@ const App = () => {
     const token = localStorage.getItem('token')
     try {
       if(token){
-        const {data} = await api.get('/api/user/data', {headers: {Authorization:
-          token}})
+        const {data} = await api.get('/api/users/data', {headers: {Authorization: `Bearer ${token}`}})
           if(data.user){
             dispatch(login({token, user: data.user}))
           }
@@ -46,6 +46,7 @@ const App = () => {
         <Route path='app' element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path='builder/:resumeId' element={<ResumeBuilder />} />
+        <Route path="cover-letter" element={<CoverLetter />} />
         </Route>
 
         <Route path="view/:resumeId" element={<Preview />} />
