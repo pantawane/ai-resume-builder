@@ -1,6 +1,6 @@
 import express from "express";
 import protect from "../middleware/authMiddleware.js";
-import { enhanceJobDescription, enhanceProfessionalSummary, uploadResume, generateCoverLetter, analyzeATS  } from "../controllers/aiController.js";
+import { enhanceJobDescription, enhanceProfessionalSummary, uploadResume, generateCoverLetter, analyzeATS, generateTemplate  } from "../controllers/aiController.js";
 
 const aiRouter = express.Router();
 
@@ -10,5 +10,6 @@ aiRouter.post('/enhance-job-desc', protect, enhanceJobDescription)
 aiRouter.post('/upload-resume', protect, uploadResume)
 aiRouter.post("/cover-letter", protect, generateCoverLetter);
 aiRouter.post("/analyze-ats", protect, analyzeATS);
+aiRouter.post("/generate-template", protect, generateTemplate);
 
 export default aiRouter;

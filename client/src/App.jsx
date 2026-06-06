@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Layout from './pages/Layout'
 import CoverLetter from "./pages/CoverLetter";
 import ATSScore from "./pages/ATSScore";
+import TemplateGenerator from "./pages/TemplateGenerator";
 import Dashboard from './pages/Dashboard'
 import ResumeBuilder from './pages/ResumeBuilder'
 import Preview from './pages/Preview'
@@ -49,6 +50,7 @@ const App = () => {
         <Route path='builder/:resumeId' element={<ResumeBuilder />} />
         <Route path="cover-letter" element={<CoverLetter />} />
         <Route path="ats-score" element={<ATSScore />} />
+        <Route path="template-generator" element={<TemplateGenerator />} />
         </Route>
 
         <Route path="view/:resumeId" element={<Preview />} />

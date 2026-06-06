@@ -24,10 +24,13 @@ const Navbar = () => {
             </Link>
             <Link to="/app/cover-letter" className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition">
                 <FileText className="size-4" />
-                     Cover Letter
+                    Cover Letter
             </Link>
             <Link to="/app/ats-score" className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition">
                 🎯 ATS Score
+            </Link>
+            <Link to="/app/template-generator" className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition">
+                ✨ AI Templates
             </Link>
             <div className='flex items-center gap-4 text-sm'>
                 <p className='max-sm:hidden'>Hi, {user?.name}</p>

@@ -317,3 +317,55 @@ export const analyzeATS = async (req, res) => {
   }
 };
 
+// AI Template Generator
+export const generateTemplate = async (req, res) => {
+  try {
+    const { profession, colorScheme, style } = req.body;
+
+    if (!profession) {
+      return res.status(400).json({ message: "Profession is required" });
+    }
+
+    const prompt = `You are an expert resume designer. Create a complete, 
+    professional HTML resume template for a ${profession}.
+    
+    Design Requirements:
+    - Color scheme: ${colorScheme || 'professional blue and white'}
+    - Style: ${style || 'modern and clean'}
+    - Must be ATS friendly
+    - Include these sections: Header, Professional Summary, Experience, Education, Skills
+    - Use inline CSS only (no external stylesheets)
+    - Use placeholder text like [Your Name], [Your Email], [Company Name] etc.
+    - Make it visually impressive and industry-appropriate for ${profession}
+    - For tech roles: use modern minimal design
+    - For banking/finance: use formal conservative design  
+    - For creative roles: use colorful modern design
+    - For medical/teaching: use clean trustworthy design
+    - The template should look UNIQUE and different from standard templates
+    - Add subtle design elements like colored headers, dividers, icons using unicode
+    - Make sure font sizes are readable (minimum 11px)
+    - Page width should be 800px max
+    - Add proper padding and spacing
+    
+    Return ONLY the complete HTML code starting with <!DOCTYPE html>.
+    No explanation, no markdown, just pure HTML.`;
+
+    const result = await ai.chat.completions.create({
+      model: process.env.OPENAI_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 3000,
+    });
+
+    const templateHTML = result.choices[0].message.content
+      .replace(/```html/g, '')
+      .replace(/```/g, '')
+      .trim();
+
+    res.json({ templateHTML });
+
+  } catch (error) {
+    console.error("Template Generation Error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
