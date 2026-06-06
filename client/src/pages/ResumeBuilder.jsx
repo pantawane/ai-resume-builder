@@ -110,16 +110,31 @@ const ResumeBuilder = () => {
       formData.append("resumeId", resumeId)
       formData.append("resumeData", JSON.stringify(updatedResumeData))
       removeBackground && formData.append("removeBackground", "yes");
-      typeof resumeData.personal_info.image === 'object' && formData.append("image",
-      resumeData.personal_info.image)
+      const hasImageFile = typeof resumeData.personal_info.image === 'object';
+      hasImageFile && formData.append("image", resumeData.personal_info.image)
+
+      // #region agent log
+      fetch('http://127.0.0.1:7658/ingest/cf3fbddf-0711-46df-9693-4bb2801c8461',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0e337a'},body:JSON.stringify({sessionId:'0e337a',location:'ResumeBuilder.jsx:saveResume',message:'saveResume before API',data:{resumeId,hasImageFile,imageType:typeof resumeData.personal_info?.image,template:resumeData.template,baseURL:import.meta.env.VITE_BASE_URL||'(unset)',hasToken:!!token},timestamp:Date.now(),hypothesisId:'B,C'})}).catch(()=>{});
+      // #endregion
 
       const {data} = await api.put('/api/resumes/update', formData, {headers: {
       Authorization: token}})
 
+      // #region agent log
+      fetch('http://127.0.0.1:7658/ingest/cf3fbddf-0711-46df-9693-4bb2801c8461',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0e337a'},body:JSON.stringify({sessionId:'0e337a',location:'ResumeBuilder.jsx:saveResume',message:'saveResume success',data:{savedImageUrl:data?.resume?.personal_info?.image||'(none)',template:data?.resume?.template},timestamp:Date.now(),hypothesisId:'C,D'})}).catch(()=>{});
+      // #endregion
+
+      if (!data.resume) {
+        throw new Error('Resume not found after save')
+      }
       setResumeData(data.resume)
       toast.success(data.message) 
     } catch (error) {
+      // #region agent log
+      fetch('http://127.0.0.1:7658/ingest/cf3fbddf-0711-46df-9693-4bb2801c8461',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0e337a'},body:JSON.stringify({sessionId:'0e337a',location:'ResumeBuilder.jsx:saveResume',message:'saveResume error',data:{errorMessage:error?.message,responseStatus:error?.response?.status,responseMessage:error?.response?.data?.message},timestamp:Date.now(),hypothesisId:'C'})}).catch(()=>{});
+      // #endregion
       console.error("Error saving resume:", error);
+      throw error
     }
   }
 
@@ -182,7 +197,13 @@ const ResumeBuilder = () => {
               <div className='space-y-6'>
                 {activeSection.id === 'personal' && (
                   <PersonalInfoForm data={resumeData.personal_info} onChange=
-                  {(data)=>setResumeData(prev => ({...prev, personal_info:data }))}
+                  {(data)=>setResumeData(prev => ({
+                    ...prev,
+                    personal_info: data,
+                    ...(typeof data.image === 'object' && data.image && prev.template !== 'minimal-image'
+                      ? { template: 'minimal-image' }
+                      : {})
+                  }))}
                   removeBackground={removeBackground}
                   setRemoveBackground={setRemoveBackground}/>
                 )}
@@ -223,7 +244,7 @@ const ResumeBuilder = () => {
                   )}
 
               </div>
-              <button onClick={()=> {toast.promise(saveResume, {loading: 'Saving...'})}} className='bg-gradient-to-br from-green-100 to-green-200
+              <button onClick={()=> {toast.promise(saveResume, {loading: 'Saving...', success: 'Saved!', error: (e) => e?.response?.data?.message || e?.message || 'Failed to save'})}} className='bg-gradient-to-br from-green-100 to-green-200
               ring-green-300 text-green-600 ring hover:ring-green-400
               transition-all rounded-md px-6 py-2 mt-6 text-sm'>
                 Save Changes

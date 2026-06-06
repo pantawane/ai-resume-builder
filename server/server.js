@@ -18,7 +18,6 @@ let isConnected = false;
 
 async function connectToMongoDB() {
   if (isConnected) return;
-
   try {
     await mongoose.connect(process.env.MONGODB_URI);
     isConnected = true;
@@ -40,5 +39,11 @@ app.get("/", (req, res) => res.send("Server is live..."));
 app.use("/api/users", userRouter);
 app.use("/api/resumes", resumeRouter);
 app.use("/api/ai", aiRouter);
+
+// ✅ ADD THIS - required for local development
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 export default app;

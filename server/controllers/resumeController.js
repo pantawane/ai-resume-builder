@@ -94,6 +94,10 @@ export const updateResume = async (req, res) => {
         const {resumeId, resumeData, removeBackground} = req.body;
         const image = req.file;
 
+        // #region agent log
+        try{fs.appendFileSync('debug-0e337a.log',JSON.stringify({sessionId:'0e337a',location:'resumeController.js:updateResume',message:'updateResume entry',data:{hasFile:!!image,fileName:image?.originalname,fileSize:image?.size,removeBackground,resumeId:!!resumeId},timestamp:Date.now(),hypothesisId:'C,D'})+'\n');}catch(_){}
+        // #endregion
+
         let resumeDataCopy;
         if (typeof resumeData === 'string') {
             resumeDataCopy = await JSON.parse(resumeData)
@@ -117,13 +121,22 @@ export const updateResume = async (req, res) => {
                             });
 
             resumeDataCopy.personal_info.image = response.url;
+            // #region agent log
+            try{fs.appendFileSync('debug-0e337a.log',JSON.stringify({sessionId:'0e337a',location:'resumeController.js:updateResume',message:'imagekit upload success',data:{imageUrl:response.url?.substring(0,80)},timestamp:Date.now(),hypothesisId:'D'})+'\n');}catch(_){}
+            // #endregion
         }
-        const resume = await Resume.findByIdAndUpdate({userId, _id: resumeId}, resumeDataCopy,
+        const resume = await Resume.findOneAndUpdate({userId, _id: resumeId}, resumeDataCopy,
             {new: true}
         );
+        if (!resume) {
+            return res.status(404).json({message: 'Resume not found'})
+        }
         return res.status(200).json({message: 'Saved successfully', resume})
         
     } catch (error) {
+        // #region agent log
+        try{fs.appendFileSync('debug-0e337a.log',JSON.stringify({sessionId:'0e337a',location:'resumeController.js:updateResume',message:'updateResume error',data:{errorMessage:error?.message},timestamp:Date.now(),hypothesisId:'C,D'})+'\n');}catch(_){}
+        // #endregion
         return res.status(400).json({message: error.message})
     }
 }

@@ -8,11 +8,26 @@ const Hero = () => {
   const [menuOpen, setMenuOpen] = React.useState(false);
 
   const logos = [
-    "https://saasly.prebuiltui.com/assets/companies-logo/instagram.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/framer.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/microsoft.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/huawei.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/walmart.svg",
+    {
+      src: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
+      alt: "Amazon",
+    },
+    {
+      src: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
+      alt: "Google",
+    },
+    {
+      src: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg",
+      alt: "Microsoft",
+    },
+    {
+      src: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
+      alt: "Netflix",
+    },
+    {
+      src: "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg",
+      alt: "IBM",
+    },
   ];
 
   return (
@@ -234,9 +249,9 @@ const Hero = () => {
             {logos.map((logo, index) => (
               <img
                 key={index}
-                src={logo}
-                alt="logo"
-                className="h-6 w-auto max-w-xs"
+                src={logo.src}
+                alt={logo.alt}
+                className="h-6 w-auto max-w-xs opacity-60 hover:opacity-100 transition-opacity"
               />
             ))}
           </div>

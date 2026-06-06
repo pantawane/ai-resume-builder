@@ -4,6 +4,9 @@ import React from 'react'
 const PersonalInfoForm = ({data, onChange, removeBackground, setRemoveBackground}) => {
 
     const handleChange = (field, value)=> {
+        // #region agent log
+        if (field === 'image') fetch('http://127.0.0.1:7658/ingest/cf3fbddf-0711-46df-9693-4bb2801c8461',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0e337a'},body:JSON.stringify({sessionId:'0e337a',location:'PersonalInfoForm.jsx:handleChange',message:'image file selected',data:{hasFile:!!value,fileName:value?.name,fileType:value?.type,fileSize:value?.size,dataKeys:data?Object.keys(data):null},timestamp:Date.now(),hypothesisId:'A,E'})}).catch(()=>{});
+        // #endregion
         onChange({...data, [field]: value})
     }
 
@@ -39,7 +42,7 @@ const PersonalInfoForm = ({data, onChange, removeBackground, setRemoveBackground
                         upload user image
                     </div>
                 )}
-                <input type="file" accept='image/jpeg, image/png' className='hidden'
+                <input type="file" accept='image/jpeg,image/png,image/jpg' className='hidden'
                 onChange={(e)=> handleChange("image", e.target.files[0])} />
             </label>
             {typeof data.image === 'object' && (

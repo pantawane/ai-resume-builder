@@ -19,7 +19,7 @@ const Navbar = () => {
         <nav className='flex items-center justify-between max-w-7xl mx-auto px-4 py-3.5
         text-slate-800 transition-all'>
             <Link to='/'>
-                  <img src="/logo.svg" alt="logo" className='h-11 w-auto' />
+                  <img src="/logo.svg" alt="logo" className='h-11 w-auto' onLoad={()=>{/* #region agent log */fetch('http://127.0.0.1:7658/ingest/cf3fbddf-0711-46df-9693-4bb2801c8461',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0e337a'},body:JSON.stringify({sessionId:'0e337a',location:'Navbar.jsx:logo',message:'navbar logo loaded',data:{src:'/logo.svg'},timestamp:Date.now(),hypothesisId:'F'})}).catch(()=>{});/* #endregion */}} onError={(e)=>{/* #region agent log */fetch('http://127.0.0.1:7658/ingest/cf3fbddf-0711-46df-9693-4bb2801c8461',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0e337a'},body:JSON.stringify({sessionId:'0e337a',location:'Navbar.jsx:logo',message:'navbar logo failed',data:{src:e?.currentTarget?.src},timestamp:Date.now(),hypothesisId:'F'})}).catch(()=>{});/* #endregion */}} />
             </Link>
             <div className='flex items-center gap-4 text-sm'>
                 <p className='max-sm:hidden'>Hi, {user?.name}</p>
