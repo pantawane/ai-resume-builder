@@ -7,6 +7,7 @@ import ATSScore from "./pages/ATSScore";
 import TemplateGenerator from "./pages/TemplateGenerator";
 import InterviewPrep from "./pages/InterviewPrep";
 import BulletSuggestions from "./pages/BulletSuggestions";
+import LinkedInImport from "./pages/LinkedInImport";
 import Dashboard from './pages/Dashboard'
 import ResumeBuilder from './pages/ResumeBuilder'
 import Preview from './pages/Preview'
@@ -55,6 +56,7 @@ const App = () => {
         <Route path="template-generator" element={<TemplateGenerator />} />
         <Route path="interview-prep" element={<InterviewPrep />} />
         <Route path="bullet-suggestions" element={<BulletSuggestions />} />
+        <Route path="linkedin-import" element={<LinkedInImport />} />
         </Route>
 
         <Route path="view/:resumeId" element={<Preview />} />

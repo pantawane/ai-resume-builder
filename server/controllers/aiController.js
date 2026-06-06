@@ -4,8 +4,6 @@ import ai from "../configs/ai.js";
 //controller for enhanching a resume's professional summary
 //POST: /api/ai/enhance-pro-sum
 
-
-
 export const enhanceProfessionalSummary = async (req, res) => {
   try {
     const { userContent } = req.body;
@@ -73,15 +71,15 @@ export const enhanceJobDescription = async (req, res) => {
 
 export const uploadResume = async (req, res) => {
   try {
-
-    const {resumeText, title} = req.body;
+    const { resumeText, title } = req.body;
     const userId = req.userId;
 
-    if(!resumeText){
-        return res.status(400).json({message: 'Missing required fields'})
+    if (!resumeText) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const systemPrompt = "You are an expert AI Agent to extract data from resume."
+    const systemPrompt =
+      "You are an expert AI Agent to extract data from resume.";
 
     const userPrompt = `extract data from this resume: ${resumeText}
     Provide data in the following JSON format with no additional text before or
@@ -134,20 +132,21 @@ export const uploadResume = async (req, res) => {
       messages: [
         {
           role: "system",
-          content: systemPrompt},
+          content: systemPrompt,
+        },
         {
           role: "user",
           content: userPrompt,
         },
       ],
-      response_format: {type: 'json_object'}
+      response_format: { type: "json_object" },
     });
 
     const extractedData = response.choices[0].message.content;
-    const parsedData = JSON.parse(extractedData)
-    const newResume = await Resume.create({userId, title, ...parsedData})
+    const parsedData = JSON.parse(extractedData);
+    const newResume = await Resume.create({ userId, title, ...parsedData });
 
-    res.json({resumeId: newResume._id})
+    res.json({ resumeId: newResume._id });
   } catch (error) {
     return res.status(400).json({ message: error.message });
   }
@@ -161,8 +160,8 @@ export const generateCoverLetter = async (req, res) => {
 
     // 2. Validate - make sure required fields exist
     if (!jobTitle || !companyName || !userName) {
-      return res.status(400).json({ 
-        message: "Job title, company name and your name are required" 
+      return res.status(400).json({
+        message: "Job title, company name and your name are required",
       });
     }
 
@@ -173,8 +172,8 @@ export const generateCoverLetter = async (req, res) => {
     Applicant Name: ${userName}
     Job Title applying for: ${jobTitle}
     Company Name: ${companyName}
-    Key Skills: ${skills || 'Not provided'}
-    Years of Experience: ${experience || 'Fresher'}
+    Key Skills: ${skills || "Not provided"}
+    Years of Experience: ${experience || "Fresher"}
     
     Instructions:
     - Write 3-4 paragraphs
@@ -200,7 +199,6 @@ export const generateCoverLetter = async (req, res) => {
 
     // 6. Send back to frontend
     res.json({ coverLetter });
-
   } catch (error) {
     console.error("Cover Letter Error:", error);
     res.status(500).json({ message: error.message });
@@ -218,26 +216,32 @@ export const analyzeATS = async (req, res) => {
 
     // Convert resume object to readable text for AI
     const resumeText = `
-      Name: ${resumeData.personal_info?.name || ''}
-      Email: ${resumeData.personal_info?.email || ''}
-      Phone: ${resumeData.personal_info?.phone || ''}
-      Location: ${resumeData.personal_info?.location || ''}
+      Name: ${resumeData.personal_info?.name || ""}
+      Email: ${resumeData.personal_info?.email || ""}
+      Phone: ${resumeData.personal_info?.phone || ""}
+      Location: ${resumeData.personal_info?.location || ""}
       
-      Professional Summary: ${resumeData.professional_summary || ''}
+      Professional Summary: ${resumeData.professional_summary || ""}
       
-      Skills: ${resumeData.skills?.join(', ') || ''}
+      Skills: ${resumeData.skills?.join(", ") || ""}
       
-      Experience: ${resumeData.experience?.map(exp => 
-        `${exp.title} at ${exp.company}: ${exp.description}`
-      ).join('\n') || ''}
+      Experience: ${
+        resumeData.experience
+          ?.map((exp) => `${exp.title} at ${exp.company}: ${exp.description}`)
+          .join("\n") || ""
+      }
       
-      Education: ${resumeData.education?.map(edu => 
-        `${edu.degree} from ${edu.institution}`
-      ).join('\n') || ''}
+      Education: ${
+        resumeData.education
+          ?.map((edu) => `${edu.degree} from ${edu.institution}`)
+          .join("\n") || ""
+      }
       
-      Projects: ${resumeData.project?.map(p => 
-        `${p.name}: ${p.description}`
-      ).join('\n') || ''}
+      Projects: ${
+        resumeData.project
+          ?.map((p) => `${p.name}: ${p.description}`)
+          .join("\n") || ""
+      }
     `;
 
     // Build the AI prompt based on whether job description is provided
@@ -303,14 +307,13 @@ export const analyzeATS = async (req, res) => {
 
     // Clean up response - remove markdown if AI adds it
     analysisText = analysisText
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
       .trim();
 
     const analysis = JSON.parse(analysisText);
 
     res.json({ analysis });
-
   } catch (error) {
     console.error("ATS Analysis Error:", error);
     res.status(500).json({ message: error.message });
@@ -330,8 +333,8 @@ export const generateTemplate = async (req, res) => {
     professional HTML resume template for a ${profession}.
     
     Design Requirements:
-    - Color scheme: ${colorScheme || 'professional blue and white'}
-    - Style: ${style || 'modern and clean'}
+    - Color scheme: ${colorScheme || "professional blue and white"}
+    - Style: ${style || "modern and clean"}
     - Must be ATS friendly
     - Include these sections: Header, Professional Summary, Experience, Education, Skills
     - Use inline CSS only (no external stylesheets)
@@ -357,12 +360,11 @@ export const generateTemplate = async (req, res) => {
     });
 
     const templateHTML = result.choices[0].message.content
-      .replace(/```html/g, '')
-      .replace(/```/g, '')
+      .replace(/```html/g, "")
+      .replace(/```/g, "")
       .trim();
 
     res.json({ templateHTML });
-
   } catch (error) {
     console.error("Template Generation Error:", error);
     res.status(500).json({ message: error.message });
@@ -380,19 +382,25 @@ export const generateInterviewQuestions = async (req, res) => {
 
     // Convert resume to text
     const resumeText = `
-      Name: ${resumeData.personal_info?.name || ''}
-      Job Title: ${jobTitle || resumeData.experience?.[0]?.title || 'Professional'}
-      Skills: ${resumeData.skills?.join(', ') || ''}
-      Experience: ${resumeData.experience?.map(exp =>
-        `${exp.title} at ${exp.company}: ${exp.description}`
-      ).join('\n') || ''}
-      Education: ${resumeData.education?.map(edu =>
-        `${edu.degree} from ${edu.institution}`
-      ).join('\n') || ''}
-      Projects: ${resumeData.project?.map(p =>
-        `${p.name}: ${p.description}`
-      ).join('\n') || ''}
-      Summary: ${resumeData.professional_summary || ''}
+      Name: ${resumeData.personal_info?.name || ""}
+      Job Title: ${jobTitle || resumeData.experience?.[0]?.title || "Professional"}
+      Skills: ${resumeData.skills?.join(", ") || ""}
+      Experience: ${
+        resumeData.experience
+          ?.map((exp) => `${exp.title} at ${exp.company}: ${exp.description}`)
+          .join("\n") || ""
+      }
+      Education: ${
+        resumeData.education
+          ?.map((edu) => `${edu.degree} from ${edu.institution}`)
+          .join("\n") || ""
+      }
+      Projects: ${
+        resumeData.project
+          ?.map((p) => `${p.name}: ${p.description}`)
+          .join("\n") || ""
+      }
+      Summary: ${resumeData.professional_summary || ""}
     `;
 
     const prompt = `You are an expert interview coach. Based on this resume, 
@@ -446,13 +454,12 @@ export const generateInterviewQuestions = async (req, res) => {
     });
 
     let responseText = result.choices[0].message.content
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
       .trim();
 
     const questions = JSON.parse(responseText);
     res.json({ questions });
-
   } catch (error) {
     console.error("Interview Questions Error:", error);
     res.status(500).json({ message: error.message });
@@ -542,7 +549,8 @@ export const suggestBullets = async (req, res) => {
     };
 
     // Get relevant examples from knowledge base
-    const professionKey = profession?.toLowerCase().replace(/ /g, '_') || 'general';
+    const professionKey =
+      profession?.toLowerCase().replace(/ /g, "_") || "general";
     const examples = knowledgeBase[professionKey] || knowledgeBase.general;
 
     const prompt = `You are an expert resume writer. 
@@ -550,10 +558,10 @@ export const suggestBullets = async (req, res) => {
 A user wrote this resume bullet point:
 "${bulletText}"
 
-Their profession: ${profession || 'General Professional'}
+Their profession: ${profession || "General Professional"}
 
 Here are examples of EXCELLENT resume bullet points for reference:
-${examples.map((b, i) => `${i + 1}. ${b}`).join('\n')}
+${examples.map((b, i) => `${i + 1}. ${b}`).join("\n")}
 
 Using these examples as inspiration and style guide, rewrite the user's bullet point in 5 different ways.
 Each version should:
@@ -599,16 +607,130 @@ Return ONLY JSON, no extra text.`;
     });
 
     let responseText = result.choices[0].message.content
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
       .trim();
 
     const suggestions = JSON.parse(responseText);
     res.json({ suggestions });
-
   } catch (error) {
     console.error("Bullet Suggestions Error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
+// LinkedIn PDF Import
+export const importLinkedIn = async (req, res) => {
+  try {
+    const { pdfText, title } = req.body;
+
+    if (!pdfText) {
+      return res.status(400).json({ message: "PDF text is required" });
+    }
+
+    const prompt = `You are an expert resume parser specializing in LinkedIn profiles.
+    
+Extract ALL information from this LinkedIn PDF export and return a structured JSON.
+
+LINKEDIN PDF CONTENT:
+${pdfText}
+
+Return ONLY this exact JSON structure (no extra text):
+{
+  "personal_info": {
+    "name": "<full name>",
+    "email": "<email if found>",
+    "phone": "<phone if found>",
+    "location": "<city, country>",
+    "linkedin": "<linkedin URL if found>",
+    "website": "<website if found>"
+  },
+  "professional_summary": "<write a 3-4 sentence professional summary based on their experience and skills>",
+  "experience": [
+    {
+      "title": "<job title>",
+      "company": "<company name>",
+      "location": "<location>",
+      "startDate": "<start date>",
+      "endDate": "<end date or Present>",
+      "description": "<responsibilities and achievements as bullet points>"
+    }
+  ],
+  "education": [
+    {
+      "degree": "<degree name>",
+      "institution": "<university/school name>",
+      "startDate": "<start year>",
+      "endDate": "<end year>"
+    }
+  ],
+  "skills": [<array of skill strings>],
+  "project": [
+    {
+      "name": "<project name>",
+      "description": "<project description>",
+      "link": "<project link if available>"
+    }
+  ]
+}
+
+Important rules:
+- Extract EVERYTHING you can find
+- If information is missing, use empty string ""
+- For skills, extract ALL skills mentioned anywhere in the document
+- Write professional_summary yourself based on their profile
+- Return ONLY valid JSON, nothing else`;
+
+    const result = await ai.chat.completions.create({
+      model: process.env.OPENAI_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 2000,
+    });
+
+    let responseText = result.choices[0].message.content
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    const extractedData = JSON.parse(responseText);
+
+    // Save as new resume in database
+    const Resume = (await import("../models/Resume.js")).default;
+
+    // Fix: Convert description array to string if AI returns array
+    const fixedExperience = extractedData.experience.map((exp) => ({
+      ...exp,
+      description: Array.isArray(exp.description)
+        ? exp.description.join("\n") // join array into string
+        : exp.description || "",
+    }));
+
+    // Fix: Same for projects
+    const fixedProjects = extractedData.project.map((proj) => ({
+      ...proj,
+      description: Array.isArray(proj.description)
+        ? proj.description.join("\n")
+        : proj.description || "",
+    }));
+
+    const resume = await Resume.create({
+      userId: req.userId,
+      title: title || `${extractedData.personal_info.name}'s LinkedIn Resume`,
+      personal_info: extractedData.personal_info,
+      professional_summary: extractedData.professional_summary,
+      experience: fixedExperience,
+      education: extractedData.education,
+      skills: extractedData.skills,
+      project: fixedProjects,
+    });
+
+    res.json({
+      message: "LinkedIn profile imported successfully!",
+      resumeId: resume._id,
+      extractedData,
+    });
+  } catch (error) {
+    console.error("LinkedIn Import Error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
