@@ -8,6 +8,7 @@ import TemplateGenerator from "./pages/TemplateGenerator";
 import InterviewPrep from "./pages/InterviewPrep";
 import BulletSuggestions from "./pages/BulletSuggestions";
 import LinkedInImport from "./pages/LinkedInImport";
+import JobTracker from "./pages/JobTracker";
 import Dashboard from './pages/Dashboard'
 import ResumeBuilder from './pages/ResumeBuilder'
 import Preview from './pages/Preview'
@@ -57,6 +58,7 @@ const App = () => {
         <Route path="interview-prep" element={<InterviewPrep />} />
         <Route path="bullet-suggestions" element={<BulletSuggestions />} />
         <Route path="linkedin-import" element={<LinkedInImport />} />
+        <Route path="job-tracker" element={<JobTracker />} />
         </Route>
 
         <Route path="view/:resumeId" element={<Preview />} />

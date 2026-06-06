@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import userRouter from "./routes/userRoutes.js";
 import resumeRouter from "./routes/resumeRoutes.js";
 import aiRouter from "./routes/aiRoutes.js";
+import jobRouter from "./routes/jobRoutes.js";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.get("/", (req, res) => res.send("Server is live..."));
 app.use("/api/users", userRouter);
 app.use("/api/resumes", resumeRouter);
 app.use("/api/ai", aiRouter);
+app.use("/api/jobs", jobRouter);
 
 // ✅ ADD THIS - required for local development
 const PORT = process.env.PORT || 5000;
