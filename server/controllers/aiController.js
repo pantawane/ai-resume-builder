@@ -207,3 +207,113 @@ export const generateCoverLetter = async (req, res) => {
   }
 };
 
+// ATS Score Analyzer
+export const analyzeATS = async (req, res) => {
+  try {
+    const { resumeData, jobDescription } = req.body;
+
+    if (!resumeData) {
+      return res.status(400).json({ message: "Resume data is required" });
+    }
+
+    // Convert resume object to readable text for AI
+    const resumeText = `
+      Name: ${resumeData.personal_info?.name || ''}
+      Email: ${resumeData.personal_info?.email || ''}
+      Phone: ${resumeData.personal_info?.phone || ''}
+      Location: ${resumeData.personal_info?.location || ''}
+      
+      Professional Summary: ${resumeData.professional_summary || ''}
+      
+      Skills: ${resumeData.skills?.join(', ') || ''}
+      
+      Experience: ${resumeData.experience?.map(exp => 
+        `${exp.title} at ${exp.company}: ${exp.description}`
+      ).join('\n') || ''}
+      
+      Education: ${resumeData.education?.map(edu => 
+        `${edu.degree} from ${edu.institution}`
+      ).join('\n') || ''}
+      
+      Projects: ${resumeData.project?.map(p => 
+        `${p.name}: ${p.description}`
+      ).join('\n') || ''}
+    `;
+
+    // Build the AI prompt based on whether job description is provided
+    const prompt = jobDescription
+      ? `You are an expert ATS (Applicant Tracking System) analyzer.
+        
+        Analyze this resume against the job description and return ONLY a JSON object.
+        
+        RESUME:
+        ${resumeText}
+        
+        JOB DESCRIPTION:
+        ${jobDescription}
+        
+        Return ONLY this JSON (no extra text):
+        {
+          "overall_score": <number 0-100>,
+          "match_score": <number 0-100>,
+          "sections": {
+            "contact_info": <number 0-100>,
+            "summary": <number 0-100>,
+            "experience": <number 0-100>,
+            "education": <number 0-100>,
+            "skills": <number 0-100>
+          },
+          "matched_keywords": [<list of keywords from job desc found in resume>],
+          "missing_keywords": [<list of important keywords from job desc missing in resume>],
+          "strengths": [<3 specific strengths of this resume>],
+          "improvements": [<3 specific things to improve>],
+          "verdict": "<one line overall verdict>"
+        }`
+      : `You are an expert ATS (Applicant Tracking System) analyzer.
+        
+        Analyze this resume for general ATS compatibility and return ONLY a JSON object.
+        
+        RESUME:
+        ${resumeText}
+        
+        Return ONLY this JSON (no extra text):
+        {
+          "overall_score": <number 0-100>,
+          "sections": {
+            "contact_info": <number 0-100>,
+            "summary": <number 0-100>,
+            "experience": <number 0-100>,
+            "education": <number 0-100>,
+            "skills": <number 0-100>
+          },
+          "strengths": [<3 specific strengths>],
+          "improvements": [<3 specific improvements needed>],
+          "verdict": "<one line overall verdict>"
+        }`;
+
+    // Send to Groq AI
+    const result = await ai.chat.completions.create({
+      model: process.env.OPENAI_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 1000,
+    });
+
+    // Parse the JSON response from AI
+    let analysisText = result.choices[0].message.content;
+
+    // Clean up response - remove markdown if AI adds it
+    analysisText = analysisText
+      .replace(/```json/g, '')
+      .replace(/```/g, '')
+      .trim();
+
+    const analysis = JSON.parse(analysisText);
+
+    res.json({ analysis });
+
+  } catch (error) {
+    console.error("ATS Analysis Error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
