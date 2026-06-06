@@ -153,3 +153,57 @@ export const uploadResume = async (req, res) => {
   }
 };
 
+// Cover Letter Generator
+export const generateCoverLetter = async (req, res) => {
+  try {
+    // 1. Get data from frontend
+    const { jobTitle, companyName, userName, skills, experience } = req.body;
+
+    // 2. Validate - make sure required fields exist
+    if (!jobTitle || !companyName || !userName) {
+      return res.status(400).json({ 
+        message: "Job title, company name and your name are required" 
+      });
+    }
+
+    // 3. Create the AI prompt
+    // This is the INSTRUCTION we give to Groq AI
+    const prompt = `Write a professional cover letter for the following details:
+    
+    Applicant Name: ${userName}
+    Job Title applying for: ${jobTitle}
+    Company Name: ${companyName}
+    Key Skills: ${skills || 'Not provided'}
+    Years of Experience: ${experience || 'Fresher'}
+    
+    Instructions:
+    - Write 3-4 paragraphs
+    - First paragraph: Express interest in the role and company
+    - Second paragraph: Highlight relevant skills and experience  
+    - Third paragraph: Why they are perfect for this role
+    - Fourth paragraph: Professional closing with call to action
+    - Keep it under 300 words
+    - Sound professional but human, NOT robotic
+    - Do NOT use placeholder text like [Your Name] - use the actual name provided
+    
+    Write only the cover letter body, no subject line needed.`;
+
+    // 4. Send to Groq AI (same pattern as your existing AI features)
+    const result = await ai.chat.completions.create({
+      model: process.env.OPENAI_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 600,
+    });
+
+    // 5. Extract the text response
+    const coverLetter = result.choices[0].message.content;
+
+    // 6. Send back to frontend
+    res.json({ coverLetter });
+
+  } catch (error) {
+    console.error("Cover Letter Error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
