@@ -459,3 +459,156 @@ export const generateInterviewQuestions = async (req, res) => {
   }
 };
 
+// RAG Bullet Suggestions (using Groq + Knowledge Base)
+export const suggestBullets = async (req, res) => {
+  try {
+    const { bulletText, profession } = req.body;
+
+    if (!bulletText) {
+      return res.status(400).json({ message: "Bullet text is required" });
+    }
+
+    // Our knowledge base - stored directly (no Pinecone needed!)
+    const knowledgeBase = {
+      software_developer: [
+        "Led development of microservices architecture serving 1M+ daily users",
+        "Reduced API response time by 40% through caching and query optimization",
+        "Built CI/CD pipeline reducing deployment time from 2 hours to 15 minutes",
+        "Mentored team of 5 junior developers improving team velocity by 30%",
+        "Developed React dashboard used by 500+ internal employees daily",
+        "Implemented automated testing suite achieving 90% code coverage",
+        "Architected scalable database schema handling 10M+ records efficiently",
+        "Integrated payment gateway processing $2M+ monthly transactions",
+      ],
+      data_scientist: [
+        "Built ML model predicting customer churn with 94% accuracy",
+        "Analyzed 50GB dataset using Python reducing processing time by 60%",
+        "Created real-time dashboard tracking KPIs for C-suite executives",
+        "Developed NLP pipeline processing 100K+ customer reviews monthly",
+        "Deployed recommendation engine increasing user engagement by 35%",
+      ],
+      marketing: [
+        "Grew social media following from 10K to 100K in 6 months",
+        "Managed $500K annual marketing budget achieving 3.5x ROI",
+        "Launched email campaign achieving 45% open rate vs 21% industry average",
+        "Reduced customer acquisition cost by 35% through targeted campaigns",
+        "Led rebranding initiative resulting in 25% increase in brand awareness",
+      ],
+      sales: [
+        "Exceeded annual sales quota by 140% generating $2.5M in revenue",
+        "Built pipeline of 200+ qualified leads converting at 35% close rate",
+        "Negotiated enterprise contracts averaging $150K ARR per client",
+        "Expanded territory revenue by 60% within first year",
+        "Retained 95% of existing accounts while growing new business by 40%",
+      ],
+      banking: [
+        "Managed portfolio of 150+ HNI clients with combined AUM of $50M",
+        "Reduced loan processing time by 30% through process automation",
+        "Identified cost savings of $2M annually through financial analysis",
+        "Ensured 100% regulatory compliance across all KYC/AML procedures",
+        "Processed 500+ transactions daily maintaining zero error rate",
+      ],
+      teacher: [
+        "Improved student pass rate from 72% to 94% through innovative teaching",
+        "Developed curriculum for 3 new courses adopted by entire department",
+        "Mentored 50+ students with 85% achieving academic excellence awards",
+        "Integrated technology tools increasing student engagement by 40%",
+        "Organized 10+ extracurricular activities improving school participation",
+      ],
+      hr: [
+        "Reduced employee attrition by 25% through structured engagement programs",
+        "Hired 100+ employees annually maintaining 95% retention rate",
+        "Implemented HRMS system reducing administrative work by 40%",
+        "Designed onboarding program reducing ramp-up time by 30%",
+        "Conducted 200+ interviews maintaining quality hire rate of 90%",
+      ],
+      project_manager: [
+        "Delivered 15+ projects on time and under budget with 98% client satisfaction",
+        "Managed cross-functional team of 20+ across 3 time zones",
+        "Reduced project delivery time by 25% through agile methodology",
+        "Saved $500K by identifying and mitigating project risks early",
+        "Coordinated with 10+ stakeholders ensuring alignment on project goals",
+      ],
+      general: [
+        "Improved team productivity by 30% through process optimization",
+        "Led cross-functional team of 10+ members to achieve quarterly targets",
+        "Reduced operational costs by 20% through strategic planning",
+        "Trained and mentored 15+ new team members successfully",
+        "Achieved 98% customer satisfaction rating consistently",
+        "Streamlined workflows reducing processing time by 35%",
+        "Collaborated with senior leadership on strategic initiatives",
+        "Generated $1M+ in cost savings through process improvements",
+      ],
+    };
+
+    // Get relevant examples from knowledge base
+    const professionKey = profession?.toLowerCase().replace(/ /g, '_') || 'general';
+    const examples = knowledgeBase[professionKey] || knowledgeBase.general;
+
+    const prompt = `You are an expert resume writer. 
+    
+A user wrote this resume bullet point:
+"${bulletText}"
+
+Their profession: ${profession || 'General Professional'}
+
+Here are examples of EXCELLENT resume bullet points for reference:
+${examples.map((b, i) => `${i + 1}. ${b}`).join('\n')}
+
+Using these examples as inspiration and style guide, rewrite the user's bullet point in 5 different ways.
+Each version should:
+- Start with a strong action verb
+- Include specific numbers/metrics where possible
+- Be concise (one line maximum)
+- Sound professional and impactful
+- Be better than the original
+
+Return ONLY valid JSON:
+{
+  "original": "${bulletText}",
+  "suggestions": [
+    {
+      "text": "<improved bullet point 1>",
+      "improvement": "<what makes this better in one sentence>"
+    },
+    {
+      "text": "<improved bullet point 2>",
+      "improvement": "<what makes this better>"
+    },
+    {
+      "text": "<improved bullet point 3>",
+      "improvement": "<what makes this better>"
+    },
+    {
+      "text": "<improved bullet point 4>",
+      "improvement": "<what makes this better>"
+    },
+    {
+      "text": "<improved bullet point 5>",
+      "improvement": "<what makes this better>"
+    }
+  ]
+}
+
+Return ONLY JSON, no extra text.`;
+
+    const result = await ai.chat.completions.create({
+      model: process.env.OPENAI_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 1000,
+    });
+
+    let responseText = result.choices[0].message.content
+      .replace(/```json/g, '')
+      .replace(/```/g, '')
+      .trim();
+
+    const suggestions = JSON.parse(responseText);
+    res.json({ suggestions });
+
+  } catch (error) {
+    console.error("Bullet Suggestions Error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
