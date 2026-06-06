@@ -32,6 +32,9 @@ const Navbar = () => {
             <Link to="/app/template-generator" className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition">
                 ✨ AI Templates
             </Link>
+            <Link to="/app/interview-prep" className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition">
+                🎤 Interview Prep
+            </Link>
             <div className='flex items-center gap-4 text-sm'>
                 <p className='max-sm:hidden'>Hi, {user?.name}</p>
                 <button onClick={logoutUser} className='bg-white hover:bg-slate-50 border border-gray-300 px-7 py-1.5

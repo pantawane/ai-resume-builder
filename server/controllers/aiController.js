@@ -369,3 +369,93 @@ export const generateTemplate = async (req, res) => {
   }
 };
 
+// Interview Question Generator
+export const generateInterviewQuestions = async (req, res) => {
+  try {
+    const { resumeData, jobTitle } = req.body;
+
+    if (!resumeData) {
+      return res.status(400).json({ message: "Resume data is required" });
+    }
+
+    // Convert resume to text
+    const resumeText = `
+      Name: ${resumeData.personal_info?.name || ''}
+      Job Title: ${jobTitle || resumeData.experience?.[0]?.title || 'Professional'}
+      Skills: ${resumeData.skills?.join(', ') || ''}
+      Experience: ${resumeData.experience?.map(exp =>
+        `${exp.title} at ${exp.company}: ${exp.description}`
+      ).join('\n') || ''}
+      Education: ${resumeData.education?.map(edu =>
+        `${edu.degree} from ${edu.institution}`
+      ).join('\n') || ''}
+      Projects: ${resumeData.project?.map(p =>
+        `${p.name}: ${p.description}`
+      ).join('\n') || ''}
+      Summary: ${resumeData.professional_summary || ''}
+    `;
+
+    const prompt = `You are an expert interview coach. Based on this resume, 
+    generate realistic interview questions a candidate would face.
+    
+    RESUME:
+    ${resumeText}
+    
+    Generate questions in these 4 categories and return ONLY valid JSON:
+    {
+      "candidate_name": "<name from resume>",
+      "job_title": "<job title>",
+      "technical": [
+        {
+          "question": "<technical question based on their specific skills>",
+          "difficulty": "Easy/Medium/Hard",
+          "tip": "<one line tip to answer this well>"
+        }
+      ],
+      "behavioral": [
+        {
+          "question": "<behavioral/HR question>",
+          "difficulty": "Easy/Medium/Hard", 
+          "tip": "<one line tip using STAR method>"
+        }
+      ],
+      "situational": [
+        {
+          "question": "<situational/scenario based question>",
+          "difficulty": "Easy/Medium/Hard",
+          "tip": "<one line tip>"
+        }
+      ],
+      "resume_based": [
+        {
+          "question": "<specific question about something in their resume>",
+          "difficulty": "Easy/Medium/Hard",
+          "tip": "<one line tip>"
+        }
+      ]
+    }
+    
+    Generate 4 questions per category (16 total).
+    Make questions SPECIFIC to their actual skills and experience.
+    Return ONLY the JSON, no extra text.`;
+
+    const result = await ai.chat.completions.create({
+      model: process.env.OPENAI_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 2000,
+    });
+
+    let responseText = result.choices[0].message.content
+      .replace(/```json/g, '')
+      .replace(/```/g, '')
+      .trim();
+
+    const questions = JSON.parse(responseText);
+    res.json({ questions });
+
+  } catch (error) {
+    console.error("Interview Questions Error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
