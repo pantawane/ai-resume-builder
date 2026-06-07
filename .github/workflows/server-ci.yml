@@ -45,7 +45,7 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           npm install -g vercel
-          vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --yes
+          vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --yes --cwd ./server
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SERVER }}
