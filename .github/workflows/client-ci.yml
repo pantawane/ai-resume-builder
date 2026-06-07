@@ -50,7 +50,6 @@ jobs:
       # Step 6 - Deploy to Vercel
       - name: 🚀 Deploy to Vercel
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        working-directory: ./client
         run: |
           npm install -g vercel
           vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --yes
