@@ -34,11 +34,5 @@ jobs:
         run: npm audit --audit-level=high
         continue-on-error: true
 
-      - name: 🚀 Deploy to Vercel
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          npm install -g vercel
-          vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --yes
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SERVER }}
+      - name: ✅ CI Complete
+        run: echo "✅ All checks passed! Vercel will auto-deploy."

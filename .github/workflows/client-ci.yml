@@ -42,11 +42,6 @@ jobs:
             exit 1
           fi
 
-      - name: 🚀 Deploy to Vercel
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          npm install -g vercel
-          vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --yes
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_CLIENT }}
+      # Vercel auto-deploys via GitHub integration  
+      - name: ✅ CI Complete
+        run: echo "✅ Build verified! Vercel will auto-deploy."
