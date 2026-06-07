@@ -1,6 +1,5 @@
 name: Server CI/CD
 
-# Run this workflow on every push to main branch
 on:
   push:
     branches: [main]
@@ -12,11 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1 - Get the code
       - name: ✅ Checkout code
         uses: actions/checkout@v4
 
-      # Step 2 - Setup Node.js
       - name: ✅ Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -24,28 +21,24 @@ jobs:
           cache: 'npm'
           cache-dependency-path: server/package-lock.json
 
-      # Step 3 - Install dependencies
       - name: ✅ Install dependencies
         working-directory: ./server
         run: npm install
 
-      # Step 4 - Check for syntax errors
       - name: ✅ Check syntax
         working-directory: ./server
         run: node --check server.js
 
-      # Step 5 - Security audit
       - name: ✅ Security audit
         working-directory: ./server
         run: npm audit --audit-level=high
         continue-on-error: true
 
-      # Step 6 - Deploy to Vercel (only on push to main)
       - name: 🚀 Deploy to Vercel
-  if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-  run: |
-    npm install -g vercel
-    vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --yes
-  env:
-    VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-    VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SERVER }}
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          npm install -g vercel
+          vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SERVER }}
