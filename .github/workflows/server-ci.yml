@@ -4,12 +4,8 @@ name: Server CI/CD
 on:
   push:
     branches: [main]
-    paths:
-      - 'server/**'  # only run when server files change
   pull_request:
     branches: [main]
-    paths:
-      - 'server/**'
 
 jobs:
   test-and-deploy:
