@@ -9,7 +9,8 @@
     "server": "nodemon server.js",
     "vercel-start": "node server.js",
     "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
-    "test:watch": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --forceExit"
+    "test:watch": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --forceExit",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
@@ -31,10 +32,19 @@
   },
   "devDependencies": {
     "@jest/globals": "^30.4.1",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.9.2",
     "cross-env": "^10.1.0",
     "jest": "^30.4.2",
     "nodemon": "^3.1.11",
-    "supertest": "^7.2.2"
+    "supertest": "^7.2.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
   },
   "jest": {
     "testEnvironment": "node",
