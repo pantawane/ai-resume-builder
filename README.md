@@ -458,7 +458,7 @@ This project is licensed under the MIT License.
 
 - GitHub: [@pantawane](https://github.com/pantawane)
 - LinkedIn: [Vansh Pantawane](https://linkedin.com/in/pantawane)
-- Live App: [ai-resume-builder.vercel.app](https://ai-resume-builder.vercel.app)
+- Live App: [ai-resume-builder.vercel.app](https://resume-generator-client.vercel.app/)
 
 ---
 
