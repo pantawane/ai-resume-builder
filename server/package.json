@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node server.js",
     "server": "nodemon server.js",
-    "vercel-start": "node server.js"
+    "vercel-start": "node server.js",
+    "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
+    "test:watch": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --watch --forceExit"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +30,22 @@
     "openai": "^6.15.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "@jest/globals": "^30.4.1",
+    "cross-env": "^10.1.0",
+    "jest": "^30.4.2",
+    "nodemon": "^3.1.11",
+    "supertest": "^7.2.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ],
+    "setupFiles": [
+      "<rootDir>/__tests__/setup.js"
+    ]
   }
 }
