@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import JobApplication from '../models/JobApplication.ts';
+import JobApplication from '../models/JobApplication.js';
 import { AuthRequest } from '../types/index.js';
 
 // Get all jobs

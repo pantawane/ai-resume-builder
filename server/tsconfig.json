@@ -18,7 +18,7 @@
   },
   "include": [
     "**/*.ts"
-  ],
+, "controllers/jobController.js", "middleware/authMiddleware.js", "middleware/errorMiddleware.js"  ],
   "exclude": [
     "node_modules",
     "dist",
