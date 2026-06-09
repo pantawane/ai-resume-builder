@@ -39,7 +39,7 @@ const CoverLetter = () => {
 
     try {
       setLoading(true);
-      console.log("Token:", token);
+      //console.log("Token:", token);
       // Send data to our new backend route
       const { data } = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/ai/cover-letter`,
