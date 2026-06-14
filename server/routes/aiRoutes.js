@@ -19,6 +19,7 @@ aiRouter.post("/enhance-job-desc", protect, enhanceJobDescription);
 aiRouter.post("/upload-resume", protect, uploadResume);
 aiRouter.post("/cover-letter", protect, generateCoverLetter);
 aiRouter.post("/analyze-ats", protect, analyzeATS);
+aiRouter.post('/generate-template', protect, generateTemplate);
 aiRouter.post("/interview-questions", protect, generateInterviewQuestions);
 aiRouter.post("/suggest-bullets", protect, suggestBullets);
 aiRouter.post("/import-linkedin", protect, importLinkedIn);
