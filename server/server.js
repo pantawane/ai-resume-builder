@@ -14,6 +14,9 @@ import { generalLimiter, authLimiter, aiLimiter } from "./middleware/rateLimitMi
 
 const app = express();
 
+// ✅ Trust Vercel's proxy (required for express-rate-limit on Vercel)
+app.set('trust proxy', 1);
+
 // ✅ Security headers
 app.use(helmet());
 
